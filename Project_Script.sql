@@ -35,6 +35,8 @@ Update LaurenDB.I_TF SET In_WTF = 1 where genename in
 -- Update In_modENCODE to the value 1 if gene appears in the NishimuraLab.modENCODE table 
  
 Update LaurenDB.I_TF SET In_modENCODE = 1 where genename in 
-(select gene_name from NishimuraLab.modENCODE_peaks); 
+(select genename from NishimuraLab.modENCODE_TFs); 
+
+-- test comment
 
 
