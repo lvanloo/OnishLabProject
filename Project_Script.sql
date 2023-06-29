@@ -1,14 +1,15 @@
 -- Create Table with identical settings to LaurenDB.I_TFbkup
- CREATE TABLE IF NOT EXISTS `I_TF` (
+CREATE TABLE `I_TF` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `WBID` varchar(255) DEFAULT NULL,
   `Genename` varchar(255) DEFAULT NULL,
   `AnatomyTermID` varchar(255) DEFAULT NULL,
   `In_WTF` tinyint(4) DEFAULT 0,
   `In_modENCODE` tinyint(4) DEFAULT 0,
+  `In_CGC` tinyint(4) DEFAULT 0,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `Genename_UNIQUE` (`Genename`)
-) ENGINE=MyISAM AUTO_INCREMENT=1036 DEFAULT CHARSET=ascii;
+) ENGINE=MyISAM AUTO_INCREMENT=1585 DEFAULT CHARSET=ascii;
 
 -- Populate table with data from AnatomyAssociation that also appears in WTF3
 
@@ -37,6 +38,7 @@ Update LaurenDB.I_TF SET In_WTF = 1 where genename in
 Update LaurenDB.I_TF SET In_modENCODE = 1 where genename in 
 (select genename from NishimuraLab.modENCODE_TFs); 
 
--- test comment
+
+
 
 
