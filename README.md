@@ -2,14 +2,7 @@
 Transcription Factor Selection Study
 
 ```mermaid
-
-
-
-
 erDiagram
-
-
-
 
 I_TF {
 
