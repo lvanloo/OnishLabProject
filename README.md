@@ -1,2 +1,2 @@
 # OnishLabProject
-Transcription Factor Selecetion Study
+Transcription Factor Selection Study
