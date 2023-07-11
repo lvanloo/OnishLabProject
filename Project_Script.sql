@@ -1,4 +1,5 @@
 -- Create Table with identical settings to LaurenDB.I_TFbkup
+
 CREATE TABLE `I_TF` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `WBID` varchar(255) DEFAULT NULL,
@@ -6,7 +7,7 @@ CREATE TABLE `I_TF` (
   `AnatomyTermID` varchar(255) DEFAULT NULL,
   `In_WTF` tinyint(4) DEFAULT 0,
   `In_modENCODE` tinyint(4) DEFAULT 0,
-  `In_CGC` tinyint(4) DEFAULT 0,
+  `In_CGC` int(11) DEFAULT 0,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `Genename_UNIQUE` (`Genename`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1585 DEFAULT CHARSET=ascii;
@@ -37,6 +38,33 @@ Update LaurenDB.I_TF SET In_WTF = 1 where genename in
  
 Update LaurenDB.I_TF SET In_modENCODE = 1 where genename in 
 (select genename from NishimuraLab.modENCODE_TFs); 
+
+-- create table with the counts and genenames from WTF3 and CGC_with_GFP
+
+CREATE TABLE CGC_counts3 AS SELECT count( b.geneName), genename FROM NishimuraLab.CGC_with_GFP a  
+INNER JOIN NishimuraLab.WTF3 b ON (a.description LIKE CONCAT('%',b.geneName,'p%'))
+GROUP BY geneName
+HAVING COUNT(*)>= 1;
+
+-- alter column names in CGC_counts 
+
+ALTER TABLE `LaurenDB`.`CGC_counts3` 
+CHANGE COLUMN `count( b.geneName)` `ctb_genename` BIGINT(21) NOT NULL ;
+
+ALTER TABLE `LaurenDB`.`CGC_counts3` 
+CHANGE COLUMN `genename` `geneName` VARCHAR(45) NULL DEFAULT NULL ;
+
+
+-- UPDATE In_CGC values with values/counts from CGC_counts
+
+UPDATE I_TF t1, CGC_counts t2 SET t1.In_CGC = t2.ctb_genename WHERE t1.genename = t2.genename;
+
+
+-- set null In_CGC = to zero
+
+UPDATE LaurenDB.I_TF SET In_CGC = 0 WHERE In_CGC IS NULL;
+
+
 
 
 
