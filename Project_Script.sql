@@ -41,17 +41,17 @@ Update LaurenDB.I_TF SET In_modENCODE = 1 where genename in
 
 -- create table with the counts and genenames from WTF3 and CGC_with_GFP
 
-CREATE TABLE CGC_counts3 AS SELECT count( b.geneName), genename FROM NishimuraLab.CGC_with_GFP a  
+CREATE TABLE CGC_counts AS SELECT count( b.geneName), genename FROM NishimuraLab.CGC_with_GFP a  
 INNER JOIN NishimuraLab.WTF3 b ON (a.description LIKE CONCAT('%',b.geneName,'p%'))
 GROUP BY geneName
 HAVING COUNT(*)>= 1;
 
 -- alter column names in CGC_counts 
 
-ALTER TABLE `LaurenDB`.`CGC_counts3` 
+ALTER TABLE `LaurenDB`.`CGC_counts` 
 CHANGE COLUMN `count( b.geneName)` `ctb_genename` BIGINT(21) NOT NULL ;
 
-ALTER TABLE `LaurenDB`.`CGC_counts3` 
+ALTER TABLE `LaurenDB`.`CGC_counts` 
 CHANGE COLUMN `genename` `geneName` VARCHAR(45) NULL DEFAULT NULL ;
 
 
@@ -64,9 +64,30 @@ UPDATE I_TF t1, CGC_counts t2 SET t1.In_CGC = t2.ctb_genename WHERE t1.genename 
 
 UPDATE LaurenDB.I_TF SET In_CGC = 0 WHERE In_CGC IS NULL;
 
+-- Add column to show which genes appear in Rob's data
+
+ALTER TABLE `LaurenDB`.`I_TF` 
+ADD COLUMN `In_Log2Fold` TINYINT(4) NULL DEFAULT 0 AFTER `In_CGC`;
+
+-- Change 0 value In_Log2Fold to a value of 1 when it appears in williams2023.Log2FoldChangeWide
+
+Update LaurenDB.I_TF SET In_Log2Fold = 1 where genename in
+(select genename from williams2023.log2FoldChangeWide);
+
+-- count the  number of rows that the WBID is in the dineenSetsAnalyzed and the I_TF
+
+SELECT count(distinct genename)
+FROM LaurenDB.I_TF
+inner JOIN williams2023.dineenSetsAnalyzed
+ON LaurenDB.I_TF.WBID = dineenSetsAnalyzed.WBID;
+
+-- add description from williams2023.dineenSetsAnalyzed to I_TF 
+
+alter table LaurenDB.I_TF add dineen_analyzed VARCHAR(45);
+UPDATE LaurenDB.I_TF t1, williams2023.dineenSetsAnalyzed t2
+SET t1.dineen_analyzed = t2.description 
+WHERE t1.WBID = t2.WBID;
 
 
-
-
-
-
+ 
+ 
